@@ -1,0 +1,53 @@
+name: Update UIA.ahk from fork if changed
+on:
+  schedule: [{ cron: "0 3 * * *" }]
+  workflow_dispatch:
+
+jobs:
+  update-uia:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download latest UIA.ahk from your fork
+        run: |
+          mkdir -p Lib
+          curl -sL https://raw.githubusercontent.com/PhysShell/UIA-v2/refs/heads/main/Lib/UIA.ahk -o Lib/UIA.ahk.new
+
+      - name: Compare with committed file
+        id: diff
+        run: |
+          if [ ! -f Lib/UIA.ahk ]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          if diff -q Lib/UIA.ahk Lib/UIA.ahk.new >/dev/null; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Replace and commit
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          mv Lib/UIA.ahk.new Lib/UIA.ahk
+          # get upstream commit in commit message:
+          META=$(curl -s https://api.github.com/repos/PhysShell/UIA-v2/commits/main | jq -r '.sha,.commit.committer.date' | paste -sd' ')
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b update/uia-$(date +'%Y%m%d')
+          git add Lib/UIA.ahk
+          git commit -m "chore: bump UIA.ahk (from fork main) ${META}"
+          git push origin HEAD
+
+      - name: Create Pull Request
+        if: steps.diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: update/uia
+          title: "Update UIA.ahk"
+          body: |
+            Automated update from fork. Changes detected in `UIA.ahk`.
+            Source: https://github.com/PhysShell/UIA-v2
+          commit-message: "chore: update UIA.ahk to latest fork main"
+          labels: automation, deps

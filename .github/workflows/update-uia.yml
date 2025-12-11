@@ -38,10 +38,10 @@ jobs:
           META=$(curl -s https://api.github.com/repos/PhysShell/UIA-v2/commits/main | jq -r '.sha,.commit.committer.date' | paste -sd' ')
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b update/uia-$(date +'%Y%m%d')
+          git checkout -b update/uia
           git add Lib/UIA.ahk
           git commit -m "chore: bump UIA.ahk (from fork main) ${META}"
-          git push origin HEAD
+          git push origin update/uia --force
 
       - name: Create Pull Request
         if: steps.diff.outputs.changed == 'true'

@@ -40,13 +40,12 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b update/uia
           git add Lib/UIA.ahk
-          git commit -m "chore: bump UIA.ahk (from fork main) ${META}"
-          git push origin update/uia --force
 
       - name: Create Pull Request
         if: steps.diff.outputs.changed == 'true'
         uses: peter-evans/create-pull-request@v6
         with:
+          base: main
           branch: update/uia
           title: "Update UIA.ahk"
           body: |
@@ -54,3 +53,4 @@ jobs:
             Source: https://github.com/PhysShell/UIA-v2
           commit-message: "chore: update UIA.ahk to latest fork main"
           labels: automation, deps
+          token: ${{ secrets.GITHUB_TOKEN }}

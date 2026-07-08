@@ -155,10 +155,9 @@ Explorer_GetWindowByHwnd(hwnd) {
 }
 
 
-CapsLock::
-{
-    Send("{LCtrl}")
-}
+; Remap CapsLock to LControl
+SetCapsLockState "AlwaysOff"
+CapsLock::LControl
 
 ; Ctrl+Space → simulate context menu key (AppsKey)
 ^space:: Send("{AppsKey}")

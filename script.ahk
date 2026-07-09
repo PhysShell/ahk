@@ -156,8 +156,14 @@ Explorer_GetWindowByHwnd(hwnd) {
 
 
 ; Remap CapsLock to LControl
-SetCapsLockState "AlwaysOff"
 CapsLock::LControl
+
+; Правый Ctrl переключает обычный CapsLock-регистр
+*RControl::
+{
+    SetCapsLockState GetKeyState("CapsLock", "T") ? "Off" : "On"
+    KeyWait "RControl"
+}
 
 ; Ctrl+Space → simulate context menu key (AppsKey)
 ^space:: Send("{AppsKey}")

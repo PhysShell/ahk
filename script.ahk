@@ -3,7 +3,8 @@
 #Include Lib\UIA.ahk
 
 EnsureStartupShortcut()
-InitExplorerAutoSelectTop()
+; InitExplorerAutoSelectTop()
+InitKeepAlive()
 
 global g_ExplorerNameHook := 0
 global g_ExplorerWinEventCb := 0
@@ -525,4 +526,14 @@ EnsureStartupShortcut() {
     } catch as e {
         MsgBox "Не удалось добавить скрипт в автозагрузку:`n`n" e.Message
     }
+}
+
+InitKeepAlive() {
+    ; Раз в 4 минуты посылаем практически неиспользуемую клавишу,
+    ; чтобы Windows не считала сессию idle.
+    SetTimer KeepAlive, 4 * 60 * 1000
+}
+
+KeepAlive() {
+    Send "{F15}"
 }

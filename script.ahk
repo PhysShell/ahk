@@ -174,6 +174,11 @@ RWin:: Send "{LAlt down}{Shift down}{Shift up}{LAlt up}"
 
 ^e:: Send "{Enter}"
 
+^!f:: {
+    WinSetAlwaysOnTop(-1, "A")
+    KeyWait "f"
+}
+
 ; Ctrl+Alt+Space → simulate opening DropDown in VS' text editor as it has no way to set hotkey in VS itself
 ; TODO: disable hotkey if text editor is not open in VS; test how it handles multiple VS code windows from one devenv process
 ^!Space::
